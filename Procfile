@@ -1,0 +1,2 @@
+web:  mashinani.wsgi
+gunicorn

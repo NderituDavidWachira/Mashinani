@@ -9,9 +9,9 @@ class CustomUserAdmin(UserAdmin):
             "Other Fields",  # Section title
             {
                 "fields": (
-                    
+                    'name',
+                    'phone',
                     'user_type',
-                    
                 )
             },
         ),
@@ -23,12 +23,10 @@ class CustomUserAdmin(UserAdmin):
             "Other Fields",  # Section title for user creation form
             {
                 "fields": (
-                    'first_name',
-                    'last_name',
-                    'email',
+                    'name',
+                    'phone',
                     'password',
                     'user_type',
-                    
                 )
             },
         ),

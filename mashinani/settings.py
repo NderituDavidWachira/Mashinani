@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from datetime import timedelta
 from pathlib import Path
+import os
+import dj_database_url
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9-hh$)+f@0g$p2%2!(=5xk%_9x6sjaj40fc9hh*$4ton@!(oza'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "*"
+]
 
 
 # Application definition
@@ -37,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'core',
     'drf_spectacular',
     'rest_framework',
@@ -67,15 +74,15 @@ SPECTACULAR_SETTINGS = {
     'CONTACT': {
         'name': 'API Support',
         'email': 'support@example.com',
-        'url': 'https://example.com/contact',
+        'url': 'http://example.com/contact',
     },
     'LICENSE': {
         'name': 'MIT License',
-        'url': 'https://opensource.org/licenses/MIT',
+        'url': 'http://opensource.org/licenses/MIT',
     },
     'SERVERS': [
-        {'url': 'https://api.example.com', 'description': 'Production server'},
-        {'url': 'https://staging.api.example.com', 'description': 'Staging server'},
+        {'url': 'http://mashinani.com', 'description': 'Production server'},
+        {'url': 'http://staging.api.example.com', 'description': 'Staging server'},
     ],
     'SCHEMA_PATH_PREFIX': '/api/v1',  # Specify path prefix for schema generation
     'COMPONENT_SPLIT_REQUEST': True,  # Split request and response body schemas
@@ -103,6 +110,7 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -110,6 +118,31 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOW_ALL_HEADERS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    
+]
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:5174'
 ]
 
 ROOT_URLCONF = 'mashinani.urls'
@@ -138,13 +171,24 @@ WSGI_APPLICATION = 'mashinani.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+POSTGRES_LOCALLY = 
+DATABASES = {}
+if DEBUG == False or POSTGRES_LOCALLY == True:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL')
 
+            )
+    }
+    
+else: 
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
