@@ -171,7 +171,7 @@ WSGI_APPLICATION = 'mashinani.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-POSTGRES_LOCALLY = 
+POSTGRES_LOCALLY = True
 DATABASES = {}
 if DEBUG == False or POSTGRES_LOCALLY == True:
     DATABASES = {
