@@ -19,7 +19,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -29,10 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = [
-    "*"
-]
-
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -65,8 +61,8 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'mashinani',
     'DESCRIPTION': 'job application app',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,  # Disable serving the schema with the UI views
-    'SWAGGER_UI_SETTINGS': {  # Custom settings for Swagger UI
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
         'deepLinking': True,
         'defaultModelRendering': 'model',
         'displayRequestDuration': True,
@@ -84,15 +80,15 @@ SPECTACULAR_SETTINGS = {
         {'url': 'http://mashinani.com', 'description': 'Production server'},
         {'url': 'http://staging.api.example.com', 'description': 'Staging server'},
     ],
-    'SCHEMA_PATH_PREFIX': '/api/v1',  # Specify path prefix for schema generation
-    'COMPONENT_SPLIT_REQUEST': True,  # Split request and response body schemas
-    'PREPROCESSING_HOOKS': [],  # Custom hooks for preprocessing
-    'POSTPROCESSING_HOOKS': [],  # Custom hooks for postprocessing
-    'ENUM_NAME_OVERRIDES': {},  # Define custom enum names
+    'SCHEMA_PATH_PREFIX': '/api/v1',
+    'COMPONENT_SPLIT_REQUEST': True,
+    'PREPROCESSING_HOOKS': [],
+    'POSTPROCESSING_HOOKS': [],
+    'ENUM_NAME_OVERRIDES': {},
 }
 
 SWAGGER_SETTINGS = {
-    'USE_SESSION_AUTH': False,  
+    'USE_SESSION_AUTH': False,
     'SECURITY_DEFINITIONS': {
         'Bearer': {
             'type': 'apiKey',
@@ -106,12 +102,12 @@ SWAGGER_SETTINGS = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=6),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
-
 }
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise here
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -126,19 +122,11 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:5174',
-    
 ]
-
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [
-    'GET',
-    'POST',
-    'PUT',
-    'PATCH',
-    'DELETE',
-    'OPTIONS',
+    'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS',
 ]
-
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:5173',
@@ -167,21 +155,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mashinani.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# online datatabse
 POSTGRES_LOCALLY = True
 DATABASES = {}
 if DEBUG == False or POSTGRES_LOCALLY == True:
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL')
-
-            )
+        )
     }
-    
 else: 
     DATABASES = {
         'default': {
@@ -189,45 +171,25 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-    
 
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
+# Static files
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Where static files will be collected
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # Whitenoise setting
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
