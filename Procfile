@@ -1,1 +1,1 @@
-web: gunicorn mashinani.wsgi
+web: gunicorn mashinani.wsgi:application
