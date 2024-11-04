@@ -1,1 +1,1 @@
-web: gunicorn mashinani.wsgi:application
+web: gunicorn mashinani.wsgi:application --log-file -
