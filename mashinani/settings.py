@@ -7,6 +7,8 @@ from datetime import timedelta
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url  # Added for better database configuration
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -16,10 +18,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'fe)up@wkbf+)_7g@1bwo)2o!tzckg^hwhyk0_ugn$ncdf8+8=k')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# Allowed hosts - add your Render and Netlify URLs
+# Allowed hosts - remove protocol and trailing slashes
 ALLOWED_HOSTS = [
-    'https://mashinani-2.onrender.com/',  # Render backend URL
-    'https://job-portal-davidwachira.netlify.app',  # Netlify frontend URL
+    'mashinani-2.onrender.com',
+    'job-portal-davidwachira.netlify.app',
     'localhost',
     '127.0.0.1'
 ]
@@ -39,27 +41,28 @@ INSTALLED_APPS = [
     'django_filters',
 ]
 
-# Database configuration
+# Database configuration - using dj-database-url for reliability
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.parse(
+        os.getenv('DATABASE_URL', 
+        'postgresql://mashinani_db_user:brUwuY8QYnyts7S6bziiWnPCNMxt7Yuj@dpg-d1h9v57fte5s739gsmug-a.oregon-postgres.render.com:5432/mashinani_db')
+    )
 }
 
-# CORS and Security Settings for Netlify
+# CORS and Security Settings
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    'https://job-portal-davidwachira.netlify.app',  # Netlify frontend
-    'http://localhost:3000',                 # Local development
-    'http://localhost:5173',                 # Vite development
-]
-CSRF_TRUSTED_ORIGINS = [
-    'https://mashinani-2.onrender.com/',  # Render backend
-    'https://job-portal-davidwachira.netlify.app',  # Netlify frontend
+    'https://job-portal-davidwachira.netlify.app',
+    'http://localhost:3000',
+    'http://localhost:5173',
 ]
 
-# Cookie settings for cross-site requests
+CSRF_TRUSTED_ORIGINS = [
+    'https://mashinani-2.onrender.com',
+    'https://job-portal-davidwachira.netlify.app',
+]
+
+# Cookie settings
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SAMESITE = 'None'
@@ -72,7 +75,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
@@ -100,12 +103,29 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Template configuration
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 # Static files
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Other settings remain the same...
+# Core settings
 ROOT_URLCONF = 'mashinani.urls'
 AUTH_USER_MODEL = 'core.User'
 WSGI_APPLICATION = 'mashinani.wsgi.application'
